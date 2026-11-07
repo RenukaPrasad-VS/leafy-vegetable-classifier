@@ -59,6 +59,18 @@ python leafy_classifier.py --image leaf.jpg --reference-pixels 120 --lower-hsv 2
 
 If no reference pixel width is supplied, the app reports pixel² and `Uncalibrated`; it cannot report cm² or Small/Large without calibration.
 
+## YOLO segmentation
+
+`leafy_yolo.py` provides a YOLO instance-segmentation alternative. It measures the largest predicted object mask and applies the same calibration and Small/Large threshold as the HSV script. Install the additional dependency with `python3 -m pip install -r requirements.txt`.
+
+Run it on an image:
+
+```bash
+python3 leafy_yolo.py --image path/to/leaf.jpg --reference-pixels 120 --reference-cm 2.5 --threshold 100
+```
+
+The default `yolo26n-seg.pt` is a general-purpose model and may not detect an isolated leaf. For reliable leaf masks, pass segmentation weights trained on labeled leaf images with `--model path/to/leaf-seg.pt`. The model needs instance mask annotations for training; a standard image-classification model cannot provide the masks needed for area measurement. Batch and camera modes are also available with `--batch` and `--camera`.
+
 ## Method and limitations
 
 The program uses no trained model. Green HSV thresholding works best with a plain white or black background and can be affected by shadows, uneven light, or green backgrounds. It measures the 2D visible contour area, not volume. Touching or overlapping leaves can merge into one contour. The largest green contour is treated as the vegetable, so remove other green objects from the frame.
